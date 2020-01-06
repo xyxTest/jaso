@@ -1,0 +1,63 @@
+ import NotFound from './views/404.vue'
+
+ import Main from './views/Main.vue'
+ import CreateProject from './views/pages/CreateProject.vue'
+ import CreateTable from './views/pages/create_project/CreateTable.vue'
+ import CreatePage from './views/pages/create_project/CreatePage.vue'
+ import CreateConfig from './views/pages/create_project/CreateConfig.vue'
+ import UserLogin from './views/pages/UserLogin.vue'
+ import Master from './views/pages/Master.vue'
+ import Myproject from './views/pages/Myproject.vue'
+
+ let routes = [{
+     path: '/master',
+     component: Master,
+     name: ''
+ }, {
+     path: '/',
+     component: Master,
+     name: '',
+     children: [
+         { path: '/createproject', component: CreateProject, name: '创建项目' }
+     ]
+ }, {
+     path: '/',
+     component: CreateProject,
+     name: '',
+     children: [
+         { path: '/createconfig', component: CreateConfig, name: '配置项目' }
+     ]
+ }, {
+     path: '/userlogin',
+     component: UserLogin,
+     name: '',
+     hidden: true
+ }, {
+     path: '/',
+     component: Master,
+     name: '',
+     children: [
+         { path: '/myproject', component: Myproject, name: '我的项目' }
+     ]
+ }, {
+     path: '/',
+     component: CreateProject,
+     leaf: true,
+     children: [
+         { path: '/createtable', component: CreateTable, name: '我的项目' }
+     ]
+ }, {
+     path: '/',
+     component: CreateProject,
+     leaf: true,
+     children: [
+         { path: '/createpage', component: CreatePage, name: '我的项目' }
+     ]
+ }, {
+     path: '/404',
+     component: NotFound,
+     name: '',
+     hidden: true
+ }];
+
+ export default routes;

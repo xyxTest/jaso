@@ -1,0 +1,33 @@
+<template> <smart-page @opreation='opreation' :config='config'>
+	<div slot="table-top"></div></smart-page> </template>
+<script>
+	import smartPage from '../../components/smartPage'
+	export default {
+		components:{smartPage},
+		data(){ 
+			return{
+				config:{
+					accessPath:'${entityPrefix}',//subParamters,initParamters,opreations
+					columns:[
+					<%
+						for (var item in props) {
+							println('                    {prop:\'' + item.prop + '\',  label:\'' + item.label +'\', type:\'' + item.type + '\', rule:\'' + item.rule + '\'},'
+							);
+						}
+					%>
+					]
+				} 
+			}
+        },
+        mounted(){
+            this.init();
+        },
+		methods:{
+            init() {
+               
+			}
+		}
+	
+	}
+
+</script>

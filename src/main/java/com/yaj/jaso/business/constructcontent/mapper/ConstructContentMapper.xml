@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaj.jaso.business.constructcontent.mapper.ConstructContentMapper">
+	<!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yaj.jaso.business.constructcontent.entity.po.ConstructContentPO">
+        <id column="construct_content_id" property="constructContentId"/>
+        <result column="construct_content_name" property="constructContentName"/>
+        <result column="construct_content_unit" property="constructContentUnit"/>
+        <result column="company_id" property="companyId"/>
+        <result column="project_id" property="projectId"/>
+        <result column="pid" property="pid"/>
+        <result column="if_delete" property="ifDelete"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+	<select id="selectTreeLists" resultType="com.yaj.jaso.business.constructcontent.entity.vo.ConstructContentTree">
+	    SELECT
+        m1.construct_content_id AS value,
+        (
+        CASE
+        WHEN (m2.construct_content_id = 0 OR m2.construct_content_id IS NULL) THEN
+        0
+        ELSE
+        m2.construct_content_id
+        END
+        ) AS pId,
+        m1.construct_content_name
+        AS label,m1.if_delete as ifDelete
+        FROM
+        construct_content m1
+        LEFT join construct_content m2 ON m1.pid = m2.construct_content_id and m1.if_delete=0 
+        <if test="companyId != null">
+          and m1.company_id=#{companyId}
+        </if> 
+        ORDER BY
+        m1.construct_content_id ASC
+	</select>
+	<select id="selectListByRole" resultType="com.yaj.jaso.business.constructcontent.entity.po.ConstructContentPO">
+	    select * from construct_content where construct_content_id in
+	    (select construct_content_id from department_construct where department_id 
+	    <if test="projectId !=null">
+	    	project_id = #{projectId}
+	    </if>
+	     in(select department_id from user_department where 
+	    <if test="jasoUserId !=null">
+			jaso_user_id=#{jasoUserId}
+	    </if> 
+	      )GROUP BY construct_content_id)
+	</select>
+</mapper>

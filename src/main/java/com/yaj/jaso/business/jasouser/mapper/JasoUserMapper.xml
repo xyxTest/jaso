@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaj.jaso.business.jasouser.mapper.JasoUserMapper">
+    <select id="getListByProjectId" resultType="com.yaj.jaso.business.jasouser.entity.vo.UserListInfo">
+        select jaso_user_id as jasoUserId,user_real_name as userRealName,user_icon as userIcon from jaso_user where jaso_user_id in
+		(select jaso_user_id from user_department where department_id in 
+		(select department_id from department  
+    	    
+        <if test="projectId != null">
+          where project_id=#{projectId}
+        </if> 
+        <if test="companyId != null">
+            and company_id=#{companyId}
+        </if>
+        ))	
+    </select>
+    <select id="getUserListByProjectId" resultType="com.yaj.jaso.business.jasouser.entity.vo.UserListInfo">
+        select jaso_user_id as jasoUserId,user_real_name as userRealName,user_icon as userIcon from jaso_user where user_type=2 and jaso_user_id in
+		(select jaso_user_id from user_project where project_id in 
+		(select department_id from department    	    
+        <if test="projectId != null">
+          where project_id=#{projectId}
+        </if> 
+        <if test="companyId != null">
+            and company_id=#{companyId}
+        </if>
+        ))
+        and jaso_user_id not in
+        <foreach collection="userIds" index="index" item="i" open="("
+                 separator="," close=")">
+            #{i}
+        </foreach>	
+    </select>
+	
+</mapper>

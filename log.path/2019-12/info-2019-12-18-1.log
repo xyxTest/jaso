@@ -1,0 +1,6 @@
+15:22:10.837 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.4.1.Final
+15:52:53.726 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 5.4.1.Final
+[16:24:18:451] [INFO] - org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.4.1.Final
+[16:25:57:294] [INFO] - org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.4.1.Final
+[16:28:14:408] [INFO] - org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.4.1.Final
+[16:32:01:190] [INFO] - org.hibernate.validator.internal.util.Version.<clinit>(Version.java:30) - HV000001: Hibernate Validator 5.4.1.Final

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaj.jaso.business.projectbuilding.mapper.ProjectBuildingMapper">
+	 <!-- 通用查询结果列 -->
+	 <resultMap id="total" type="java.lang.Integer">
+        <result column="total"/>
+    </resultMap>
+	<select id="selectListTree" resultType="com.yaj.jaso.business.department.entity.vo.DepartmentTree">
+	  SELECT
+        m1.project_building_id AS value,
+        (
+        CASE
+        WHEN (m2.project_building_id = 0 OR m2.project_building_id IS NULL) THEN
+        0
+        ELSE
+        m2.project_building_id
+        END
+        ) AS pId,
+        m1.building_name
+        AS label,m1.if_delete as ifDelete
+        FROM (select * from project_building where if_delete=0
+        <if test="companyId != null">
+            and company_id=#{companyId}
+        </if>
+        <if test="projectId != null">
+            and project_id=#{projectId}
+        </if>
+        ) m1
+        LEFT join project_building m2 ON m1.pid = m2.project_building_id
+        ORDER BY
+        m1.project_building_id ASC
+	</select>
+	<!-- 获取某一节点的所有子节点 -->
+	<select id="selectListTreeByPid" resultType="com.yaj.jaso.business.projectbuilding.entity.po.GetsResult">
+    	 SELECT t3.project_building_id as projectBuildingId,t3.company_id as companyId,
+		     t3.project_id as projectId,t3.building_name as buildingName,t3.pid,t3.status,
+		     t3.create_time as createTime,t3.apartment_id as apartmentId,t3.if_delete as ifDelete,t4.apartment_name as apartmentName FROM (
+             SELECT t1.*,
+             IF(FIND_IN_SET(pid, @pids) > 0, @pids := CONCAT(@pids, ',', project_building_id), 0) AS ischild
+             FROM (
+                  SELECT * FROM project_building t ORDER BY pid, project_building_id
+                 ) t1,    
+        <if test="pid != null">
+            (SELECT @pids := #{pid}
+        </if> )t2
+         ) t3 LEFT JOIN apartment t4 on t3.apartment_id = t4.apartment_id WHERE ischild != 0 and t3.if_delete=0 and t3.status=3
+        <if test="companyId !=null">
+             and t3.company_id=#{companyId}
+        </if>
+        <if test="projectId !=null">
+             and t3.project_id=#{projectId} ORDER BY t3.project_building_id asc
+        </if>
+         limit #{limit1},#{limit2}
+	</select>
+	<select id="selectListTreeByPidCount" resultType="java.lang.Integer">
+    	 SELECT count(t3.project_building_id) as total FROM (
+             SELECT t1.*,
+             IF(FIND_IN_SET(pid, @pids) > 0, @pids := CONCAT(@pids, ',', project_building_id), 0) AS ischild
+             FROM (
+                  SELECT * FROM project_building t ORDER BY pid, project_building_id
+                 ) t1,    
+        <if test="pid != null">
+            (SELECT @pids := #{pid}
+        </if> )t2
+         ) t3 LEFT JOIN apartment t4 on t3.apartment_id = t4.apartment_id WHERE ischild != 0 and t3.if_delete=0 and t3.status=3
+        <if test="companyId !=null">
+             and t3.company_id=#{companyId}
+        </if>
+        <if test="projectId !=null">
+             and t3.project_id=#{projectId} ORDER BY t3.project_building_id asc
+        </if>
+	</select>
+	<select id="selectIdListByPid" resultType="java.lang.Long">
+    	 SELECT t3.project_building_id FROM (
+             SELECT t1.*,
+             IF(FIND_IN_SET(pid, @pids) > 0, @pids := CONCAT(@pids, ',', project_building_id), 0) AS ischild
+             FROM (SELECT * FROM project_building) t1,    
+        <if test="pid != null">
+            (SELECT @pids := #{pid}
+        </if> )t2
+         ) t3 WHERE ischild != 0 and t3.if_delete=0
+        <if test="companyId !=null">
+             and t3.company_id=#{companyId}
+        </if>
+        <if test="projectId !=null">
+             and t3.project_id=#{projectId}
+        </if>
+	</select>
+</mapper>

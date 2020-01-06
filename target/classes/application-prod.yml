@@ -1,0 +1,110 @@
+
+###################  项目启动端口  ###################
+server:
+  port: 8090
+  context-path: /jaso/
+
+base:
+  swagger-open: false
+  noAuthPath: 
+#      - /demo/**
+      - /generate/** 
+      - /User/login
+      - /Member/login
+      - /Resource/search
+      - /User/upload
+      - /User/mobileUpload
+      - /Orders/wechatNotify
+      - /Orders/aliNotify
+      - /User/version
+  test: ff
+  generate: false
+
+log:
+  path: /data/log/printer3d
+  level: log
+  fileName: printer3d
+
+
+
+###################  mybatis-plus配置  ###################
+mybatis-plus:
+  mapper-locations: classpath*:com/yaj/jaso/business/*/mapper/*.xml
+  typeAliasesPackage: com.yaj.printer3d.business.*.entity.po
+  global-config:
+    id-type: 0  #0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+    db-column-underline: false
+    refresh-mapper: true
+    #逻辑删除配置
+    logic-delete-value: 1
+    logic-not-delete-value: 0
+    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true #配置的缓存的全局开关
+    lazyLoadingEnabled: true #延时加载的开关
+    multipleResultSetsEnabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+
+---
+
+###################       ###################
+spring:
+  datasource: 
+      url: jdbc:mysql://rm-8vbvf3jg68p6538jg.mysql.zhangbei.rds.aliyuncs.com:3306/printer3d?useUnicode=true&characterEncoding=utf8&useSSL=false
+      username: wanhe
+      password: Wanhenb123
+      filters: log4j,wall,mergeStat
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+  aop:
+      proxy-target-class: true
+  mvc:
+#      static-path-pattern: /static/**
+      view:
+        prefix: /WEB-INF/view
+
+
+
+###################  beetl配置  ###################
+beetl:
+  delimiter-statement-start: \@   #开始结束标签(yaml不允许@开头)
+  delimiter-statement-end: null
+#  resource-tagroot: common/tags   #自定义标签文件Root目录和后缀
+#  resource-tagsuffix: tag
+  resource-auto-check: false #是否检测文件变化,开发用true合适，但线上要改为false
+  
+  
+  
+##################  oss配置 ####################
+oss:
+  endpoint: http://oss-cn-qingdao.aliyuncs.com
+  accessKeyId: LTAI4aXW9AGfFwC5
+  accessKeySecret: enWHRk4SWTSbWGNGICI7p8PJOA0uv7
+  bucketName: bjbztest
+  folder: hrs
+  business: img
+
+##################  alipay配置 ####################
+ali:
+  app_id: 2018092961488849
+  server_url: https://openapi.alipay.com/gateway.do
+  private_key: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCiFUXIz9n0FzeDxE5pmsVMG46PbD2kOwxin5O/0WdFF1YKdaR/Pt366K7k0EX2Xz6D3MDzT3zHOuh0O1deKuZPFUemXH5xvRjQhALz46Of+/gEFPHkTtnR7HSgbn5vDQx29AoJm3PHMJ8316LiwFqOEZpWt0OTUTQQGMb3wbI56O/PKkr/p4eew5f28N8BiEFQrOlQsr8Ph7TK+MUUo+SCIps3qk2E4wSmVShJoyoY4EJi+4/mudsfS90rdhRQoskSIYqiEQuQ3BKbo1ihDxUSkSCvY11hqGCZBUeRieK2LNgoojIEz5xFnNZMvhtZJzTwKEIgKem1ER6aZzky6Fr9AgMBAAECggEAIdAeRs5Vwb42Lp79XLqU/lOhYfpKwcAvzUNNJ28gBCHiKTxxnLoYxQdVtRZeAg/MkuWyuw+SEF4RsG3QxCxe75CY6fPRzRiN3LIti4Op1u5Rx0g3TlHEzy5tBisG5VPrjcVLcsWjWaKjFJs/t945BfpWIFELH+iI2/LPT1BxRfMk2+ZiMYnaQz7cZhFEy0B55DqipaTrnUr7zkjDJ3ATOJPUbOqpXT+2oWO+ZwDI/WuEh9fSjbfnHjct9NoS08fG2jThmDHzCiEvfkgo1p7yRbqmXXW4j14SSd+hczeMrShHVPrCtN0p83OoCNN4lpv71nAoFCpwx+/MZAEXfk6TYQKBgQDigjNHWaXwDLk+vBPbqMujFcEt6lWroYY/g3n+4E1+P5vQZDBZ8ziLeQHhDSYoib9Z3Glin27ELJ/a6OV0rL5R+y1iyz2GOh/ihMIpzTb8w0qM2kzDehpAIVI+QO6a8IJcQVm1RiNsM2dkeMSwWP4UZnLkLtxCFRN9TIc0UKVI5wKBgQC3L7Gx3JsPnFrx7cMx2SmSm5qQZ0U8Ie+cptRHxgcbpk7TM1zGCG7umIjCUQaEqduEP++arM73+b6BXFRDG2FYWDHM0YReUNBhO2+nldU7bIsbZR1hCW887gBrE+u47d46pOJ7jbEnOMA9UNZ9PJehUQLWvxMkXB9nHMoVX2CMewKBgBh4SGHk5XBRb5G/b8XDLnyn1P7I2gh4orAp2/wU70o8RPD2YeLVy74FjJZrfTvT5cAnd5sX7jdzOrHDh0ZbgxQINpb9rd/aV6d5ACDT8qTL1DnzO2fCwSM8dk4TZbOHWA3vYWmb8ie2Re0svtLuSkSZ7L+J8HGTJU/b/J9CNxjxAoGAJrOm4SLwh63K8Q4AjUmKJPVHBHctA3VQAFKmyrslyUurn6dcVGJ3vWTwj806iVCxlhFD9/PGjlFvVDlDfCIOwPFxJAqn4p1ESSabglZ/hFx8Tz9fo56wp7jI0daVmK54ov8u8lePM/AjfVDU4ASrLGPHK8OWsbnc0JYeg8Fwzn0CgYBrEE9f4mzi+pOpku0CqJp687OnC8LdBA1eyAwo2iYenP8CuzBwCjbOtfEDQIOpOtrjpY/om/VMmtH+fMb7FjGqD+ar/PRkLK/MMGytSM2g18alE28hoMu2rxRbBEpUP7DVs1Oz9M6RYdTemFZXjiqC5vYhu+rZBe1yRdIjkXPNww== 
+  public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAohVFyM/Z9Bc3g8ROaZrFTBuOj2w9pDsMYp+Tv9FnRRdWCnWkfz7d+uiu5NBF9l8+g9zA8098xzrodDtXXirmTxVHplx+cb0Y0IQC8+Ojn/v4BBTx5E7Z0ex0oG5+bw0MdvQKCZtzxzCfN9ei4sBajhGaVrdDk1E0EBjG98GyOejvzypK/6eHnsOX9vDfAYhBUKzpULK/D4e0yvjFFKPkgiKbN6pNhOMEplUoSaMqGOBCYvuP5rnbH0vdK3YUUKLJEiGKohELkNwSm6NYoQ8VEpEgr2NdYahgmQVHkYnitizYKKIyBM+cRZzWTL4bWSc08ChCICnptREemmc5Muha/QIDAQAB
+  seller_id: dfdsalkfjsadlkd
+  notify_url: http://47.92.27.215:8090/printer3d/Orders/aliNotify
+#  app_id: 2018113062409294
+#  server_url: https://openapi.alipay.com/gateway.do
+#  private_key:  MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCZ9F7Vh+42onYm9SQqKf87gqyxxUB+8dN4WWod9xE5RlIRy8ADIbDyPHZN582B2P5ybw09mFlA6J5dMJiJAHX6hKrXF+XbZmsw7XQXcpn7fSUEVA4jiWiGOdnsWPSsgRrDnOJ1EjEQEyCXHlNvfzcT1x9AyqwXpY5Dz1gTo6oRxG+bnTH0+zaPqSAzzJGJEHAdcnGDYvN6ucXFBaQ2zs9iAtrbsBON7F1/SrgQ2KyS27RBhi1XtIJCvUpDKKH3VSKPywDZbxDzVAZh/Uj34wRKBtYMHhCl8E6Cy/PtxS934j8XnWtdup//+G1BkzE3YLBVguPe2FT3orZ8S7Vdg8mzAgMBAAECggEAbdS6OxeISA3KwKwuKq5fWXM2BHS2OFoJBVi0rb/u169lKTD0QMeuVoHv3FA8eh/2FmlHRuQC+J17LPxYNZTQlfJDdsOjxcvhOLyOD5RAafuzhsz4cT28BdYLs+MaWl6YW2j23ZIm0lLy8xw9ZdOZ1Vuo/i4Ya54+Sf4H1aryz0z5//yRAR65QSprdaDuzamrEQ9TX/xfyxIHYuQiH+yl0KcClZUevZkAjy+55tUMKhNjyaeH0g3Cvl+seb5U60Q2goSCSUwFjVvsCUSXnpDhObyzWTPdK7058rgvM7CrOtHshHTlqVzZ6kkr678fB6yXkDEZGPTYscV8N135OShyYQKBgQDYvyqfvHEjeoqT58onVRgrZMUmYCyXhD4jpt2Ar6sXenAyfZodlWfHkrZRsVX7htRTZv8mYIa1ik3pze728VpufvyFDI9z5+6z/sblTnqpj4ytzxF62zF9YTW7exfqsN8N/XNY0RGz05XWzfsk09xrq5K0nH+nlE+JcYN0XkaGSwKBgQC11gb2PMowscY0E29MMbYZUaBhRe2dBn6CyDo5YrkzN0e8TlFsMXE5OTOqEZbj/tt3QOaIftdkd4EzRD+OWFXIlW2CN/YDsOZvyMdoXUNXZV3uQPlSBNDmDDtUAxwCq12xpzRjOTuac4cCZpyDGnypV6kEtBriEc4fRaoUsb3JOQKBgG59BL1o0kPDs+Cxx9tFBY0ZUWa+n/yc7RA/f6qZ4h2VzJvwax+pib2yjD4YqDwP/yyE1Iw7qG/ikNUepTI81lx9XzxzqqzrDkOzHLDH0L+e7ZesdryqABBp/XoUxZxdjVcUXDhqWxvQQBG/7sZXOYWpcJ+hJ3HFqMXnl5s6c7kBAoGBALPtWaw0UNnIP1juVjYuBoOdKra2LD4x2+NrX3nDP4D3VWt2j8kgT2oRORczGnz2hZHGTZeI83d9bQIeqUkgDZpSii7NUwkp9YttQCv8BROowT5tWoeXLmJEfjxOa1wU17xfuE3qpxjY8iIlCQANqIckr6Fw2h0TA0QcegTKMAK5AoGAQT94QNPJ1+KG9gWyxVSgAVcwYLUweLnCzEsRU7mLO660NDadrG/f+S3Q2ItXagSHEzJr29g58KInFeKEA8zqQHSJDlvtVngssyWvxWTlOxDCuQsDR5JM9IPE4LgIHJoRU9OsL84E5IyGtAcfPRGq+BVOPQYK/x46LSt+kATra0I= 
+#  public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmfRe1YfuNqJ2JvUkKin/O4KsscVAfvHTeFlqHfcROUZSEcvAAyGw8jx2TefNgdj+cm8NPZhZQOieXTCYiQB1+oSq1xfl22ZrMO10F3KZ+30lBFQOI4lohjnZ7Fj0rIEaw5zidRIxEBMglx5Tb383E9cfQMqsF6WOQ89YE6OqEcRvm50x9Ps2j6kgM8yRiRBwHXJxg2LzernFxQWkNs7PYgLa27ATjexdf0q4ENisktu0QYYtV7SCQr1KQyih91Uij8sA2W8Q81QGYf1I9+MESgbWDB4QpfBOgsvz7cUvd+I/F51rXbqf//htQZMxN2CwVYLj3thU96K2fEu1XYPJswIDAQAB
+#  notify_url: http://47.92.27.215:8090/printer3d/Orders/aliNotify
+  
+##################  wechat配置 ####################
+wechat:
+  app_id: wx89aaee5dfa45f172
+  app_secret: ef9491172fb81e5bd5bea126ddd46f12
+  key: 50C8C5E16C0323A6F0D5B17EBF8EA70E
+  server_url: https://api.mch.weixin.qq.com/pay/unifiedorder
+  notify_url: https://api.mch.weixin.qq.com/pay/unifiedorder
+  mchid: 1514846241
+

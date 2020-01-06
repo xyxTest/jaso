@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaj.jaso.business.menu.mapper.MenuMapper">
+    <resultMap id="BaseResultMap" type="com.yaj.jaso.business.menu.entity.po.MenuPO">
+        <id column="menu_id" property="menuId"/>
+        <result column="menu_name" property="menuName"/>
+        <result column="menu_path" property="menuPath"/>
+        <result column="create_time" property="createTime"/>
+        <result column="if_delete" property="ifDelete"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        menu_id AS menuId, menu_name AS menuName, menu_path AS menuPath,
+         create_time AS createTime, if_delete AS ifDelete
+    </sql>
+    <select id="selectListByRole" resultType="com.yaj.jaso.business.menu.entity.po.MenuPO">
+        select 
+        <include refid="Base_Column_List"/>
+         from menu where menu_id in(select menu_id from role_menu where role_id 
+        in(select role_id from user_role 
+        <if test="companyId != null">
+          where company_id=#{companyId}
+        </if> 
+        <if test="jasoUserId != null">
+             and jaso_user_id = #{jasoUserId})) 
+        </if>
+        	
+    </select>
+	
+</mapper>

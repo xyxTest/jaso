@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaj.jaso.business.measureproblem.mapper.MeasureProblemMapper">
+     <!-- 通用查询结果列 -->
+	<select id="selectLists" resultType="com.yaj.jaso.business.measureproblem.entity.vo.MeasureProblemResult">
+		select a.measure_problem_id as measureProblemId,a.company_id as companyId,a.project_id as projectId,
+		a.check_site as checkSite,a.check_date as checkDate,a.check_user as checkUser,a.detail,
+		a.measure_point_id as measurePointId,a.project_check_type_id as projectCheckTypeId,
+		a.input_data as inputData,a.measure_site_id as measureSiteId,a.rectify_user as rectifyUser,
+		a.finished_date as finishedDate,a.process,a.status,a.score,a.create_time as createTime,a.image_files as imageFiles,a.voice_files as voiceFiles,
+		a.jaso_user_id as jasoUserId,a.if_delete as ifDelete,b.user_real_name as userRealName,c.check_name as checkName 
+		from measure_problem a,jaso_user b,project_check_type c where a.project_check_type_id=c.project_check_type_id 
+		and a.jaso_user_id=b.jaso_user_id and a.if_delete=0
+		<if test="companyId != null">
+            and a.company_id=#{companyId}
+		</if> 
+		<if test="jasoUserId != null">
+		    and a.jaso_user_id=#{jasoUserId}
+		</if>
+		<if test="projectId != null">
+		    and a.project_id=#{projectId}
+		</if>
+		<if test="status != null">
+		    and a.status=#{status}
+		</if>
+		 order by a.create_time desc
+	</select>
+	<select id="selectDetail" resultType="com.yaj.jaso.business.measureproblem.entity.vo.MeasureProblemResult">
+		select a.measure_problem_id as measureProblemId,a.company_id as companyId,a.project_id as projectId,
+		a.check_site as checkSite,a.check_date as checkDate,a.check_user as checkUser,a.detail,
+		a.measure_point_id as measurePointId,a.project_check_type_id as projectCheckTypeId,
+		a.input_data as inputData,a.measure_site_id as measureSiteId,a.rectify_user as rectifyUser,d.project_name as projectName,
+		a.finished_date as finishedDate,a.process,a.status,a.score,a.create_time as createTime,a.voice_files as voiceFiles,a.image_files as imageFiles,
+		a.jaso_user_id as jasoUserId,a.if_delete as ifDelete,b.user_real_name as userRealName,c.check_name as checkName 
+		from measure_problem a left join jaso_user b on a.jaso_user_id=b.jaso_user_id 
+		left join project_check_type c on a.project_check_type_id=c.project_check_type_id left join project d on a.project_id=d.project_id where 
+		(a.if_delete is  null or a.if_delete=0) and (b.if_delete is  null or b.if_delete=0)
+		and (c.if_delete is  null or c.if_delete=0) 
+		<if test="companyId != null">
+            and a.company_id=#{companyId}
+		</if> 
+		<if test="measureProblemId != null">
+		    and a.measure_problem_id=#{measureProblemId}
+		</if>
+		<if test="projectId != null">
+		    and a.project_id=#{projectId}
+		</if>
+	</select>
+</mapper>

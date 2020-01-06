@@ -1,0 +1,105 @@
+
+###################  项目启动端口  ###################
+server:
+  port: 8089
+  context-path: /jaso/
+
+base:
+  swagger-open: true
+  noAuthPath: 
+#      - /demo/**
+      - /generate/** 
+      - /JasoUser/loginPc
+      - /JasoUser/getIdentifyingCode ##用户通过手机号码获取验证码
+      - /JasoUser/getIdentifyingInfo ##通过验证码修改账号密码
+      - /SysUser/login
+      - /JasoUser/loginApp
+      - /Resource/search
+      - /User/upload
+      - /User/mobileUpload
+      - /Orders/wechatNotify
+      - /Orders/aliNotify
+      - /User/version
+      
+  test: ff
+  generate: true
+
+###################  mybatis-plus配置  ###################
+mybatis-plus:
+  mapper-locations: classpath*:com/yaj/jaso/business/*/mapper/*.xml
+  typeAliasesPackage: com.yaj.jaso.business.*.entity.po
+  global-config:
+    id-type: 0  #0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+    db-column-underline: false
+    refresh-mapper: true
+    #逻辑删除配置
+    logic-delete-value: 1
+    logic-not-delete-value: 0
+    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+  configuration:
+    map-underscore-to-camel-case: true
+    callSettersOnNulls: true #解决，查询返回结果含null没有对应字段值问题
+    cache-enabled: true #配置的缓存的全局开关
+    lazyLoadingEnabled: true #延时加载的开关
+    multipleResultSetsEnabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+###################       ###################
+spring:
+  datasource: 
+      url: jdbc:mysql://localhost:3306/springboot_jasobim?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+      ##url: jdbc:mysql://10.3.103.20:3306/springboot_jasobim?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+      username: root
+      password: 108158
+      ##password: root123
+      filters: log4j,wall,mergeStat
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+  aop:
+      proxy-target-class: true
+  mvc:
+#      static-path-pattern: /static/**
+      view:
+        prefix: /WEB-INF/view
+  ###对于rabbitMQ的支持
+ 
+###################  beetl配置  ###################
+beetl:
+  delimiter-statement-start: \@   #开始结束标签(yaml不允许@开头)
+  delimiter-statement-end: null
+#  resource-tagroot: common/tags   #自定义标签文件Root目录和后缀
+#  resource-tagsuffix: tag
+  resource-auto-check: true #是否检测文件变化,开发用true合适，但线上要改为false
+  
+  
+  
+##################  oss配置 ####################
+oss:
+  endpoint: http://oss-cn-qingdao.aliyuncs.com
+  accessKeyId: LTAI4aXW9AGfFwC5
+  accessKeySecret: enWHRk4SWTSbWGNGICI7p8PJOA0uv7
+  bucketName: bjbztest
+  folder: hrs
+  business: img
+
+##################  alipay配置 ####################
+ali:
+#  app_id: 2018092961488849
+#  server_url: https://openapi.alipay.com/gateway.do
+#  private_key: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCiFUXIz9n0FzeDxE5pmsVMG46PbD2kOwxin5O/0WdFF1YKdaR/Pt366K7k0EX2Xz6D3MDzT3zHOuh0O1deKuZPFUemXH5xvRjQhALz46Of+/gEFPHkTtnR7HSgbn5vDQx29AoJm3PHMJ8316LiwFqOEZpWt0OTUTQQGMb3wbI56O/PKkr/p4eew5f28N8BiEFQrOlQsr8Ph7TK+MUUo+SCIps3qk2E4wSmVShJoyoY4EJi+4/mudsfS90rdhRQoskSIYqiEQuQ3BKbo1ihDxUSkSCvY11hqGCZBUeRieK2LNgoojIEz5xFnNZMvhtZJzTwKEIgKem1ER6aZzky6Fr9AgMBAAECggEAIdAeRs5Vwb42Lp79XLqU/lOhYfpKwcAvzUNNJ28gBCHiKTxxnLoYxQdVtRZeAg/MkuWyuw+SEF4RsG3QxCxe75CY6fPRzRiN3LIti4Op1u5Rx0g3TlHEzy5tBisG5VPrjcVLcsWjWaKjFJs/t945BfpWIFELH+iI2/LPT1BxRfMk2+ZiMYnaQz7cZhFEy0B55DqipaTrnUr7zkjDJ3ATOJPUbOqpXT+2oWO+ZwDI/WuEh9fSjbfnHjct9NoS08fG2jThmDHzCiEvfkgo1p7yRbqmXXW4j14SSd+hczeMrShHVPrCtN0p83OoCNN4lpv71nAoFCpwx+/MZAEXfk6TYQKBgQDigjNHWaXwDLk+vBPbqMujFcEt6lWroYY/g3n+4E1+P5vQZDBZ8ziLeQHhDSYoib9Z3Glin27ELJ/a6OV0rL5R+y1iyz2GOh/ihMIpzTb8w0qM2kzDehpAIVI+QO6a8IJcQVm1RiNsM2dkeMSwWP4UZnLkLtxCFRN9TIc0UKVI5wKBgQC3L7Gx3JsPnFrx7cMx2SmSm5qQZ0U8Ie+cptRHxgcbpk7TM1zGCG7umIjCUQaEqduEP++arM73+b6BXFRDG2FYWDHM0YReUNBhO2+nldU7bIsbZR1hCW887gBrE+u47d46pOJ7jbEnOMA9UNZ9PJehUQLWvxMkXB9nHMoVX2CMewKBgBh4SGHk5XBRb5G/b8XDLnyn1P7I2gh4orAp2/wU70o8RPD2YeLVy74FjJZrfTvT5cAnd5sX7jdzOrHDh0ZbgxQINpb9rd/aV6d5ACDT8qTL1DnzO2fCwSM8dk4TZbOHWA3vYWmb8ie2Re0svtLuSkSZ7L+J8HGTJU/b/J9CNxjxAoGAJrOm4SLwh63K8Q4AjUmKJPVHBHctA3VQAFKmyrslyUurn6dcVGJ3vWTwj806iVCxlhFD9/PGjlFvVDlDfCIOwPFxJAqn4p1ESSabglZ/hFx8Tz9fo56wp7jI0daVmK54ov8u8lePM/AjfVDU4ASrLGPHK8OWsbnc0JYeg8Fwzn0CgYBrEE9f4mzi+pOpku0CqJp687OnC8LdBA1eyAwo2iYenP8CuzBwCjbOtfEDQIOpOtrjpY/om/VMmtH+fMb7FjGqD+ar/PRkLK/MMGytSM2g18alE28hoMu2rxRbBEpUP7DVs1Oz9M6RYdTemFZXjiqC5vYhu+rZBe1yRdIjkXPNww== 
+#  public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAohVFyM/Z9Bc3g8ROaZrFTBuOj2w9pDsMYp+Tv9FnRRdWCnWkfz7d+uiu5NBF9l8+g9zA8098xzrodDtXXirmTxVHplx+cb0Y0IQC8+Ojn/v4BBTx5E7Z0ex0oG5+bw0MdvQKCZtzxzCfN9ei4sBajhGaVrdDk1E0EBjG98GyOejvzypK/6eHnsOX9vDfAYhBUKzpULK/D4e0yvjFFKPkgiKbN6pNhOMEplUoSaMqGOBCYvuP5rnbH0vdK3YUUKLJEiGKohELkNwSm6NYoQ8VEpEgr2NdYahgmQVHkYnitizYKKIyBM+cRZzWTL4bWSc08ChCICnptREemmc5Muha/QIDAQAB
+#  seller_id: dfdsalkfjsadlkd
+#  notify_url: http://47.92.27.215:8090/jaso/Orders/aliNotify
+  app_id: 2018113062409294
+  server_url: https://openapi.alipay.com/gateway.do
+  private_key:  MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCd6NLxHcCF+mCnw+Bp47Onltom4WpRXFa7Z863YF2rH6WDE7vJURz4AsuIaHIze98Iof6gNinmuKCfOUtmWFA4M6bUxoBFRwD24ktkWHOCJjOGmLT+tWOeC4DGfEnf2p0aqB3RNqDPy6af+au72eyALQ2qIATD9mREo12DBd8NOJMsSFxQwo2WaxqxCwVwZcz4naAwAaQAXClxJScAldMHaHGqQWIbEpW3ZqKkd4gUuEoLC1N0JGBvfFuxi+bK5urd4fWjpPcwPw3Tbl6OHZqyx34nP5CZPB6WDVKBzXtuOwlW7loW757fGoMGyEfOeMbmvkuWm0ppoegQI9OnOh+9AgMBAAECggEAbrLEBeHckE/IqHNJhBHrZMX84prNhIHeD3yjTqxQneEOj4gq8eNaEocrFdJalLr2zL97l+bAkwzFFTn+IJ4yhmO3RZxuWaKAC5LyVUMonomXP3kYESMp1aasvPhudW51CjXmyT6pl2JlyeomOQd5oxVyadwOWy4EdpWrvWlFR6dQCu875acWerrAF33t95Es4y8hfZejcJ09QHH0c5BBflADu/WFIH5UuV7FbahSQtWQ6M81h1+EbuifYAJVn/yntkBmy9aL7E/X43wppYNd9NSfDPFtv9dh3R41xyF7sQNZNlKRFyBpfju8kZOX4QrV0htUxP/r9FGqOZ9XpTXvAQKBgQDmVwSpYqnwhlFnFnhSlf7IUoTh4nGj9W0q/Hqb2gTYSMY41aRFq5WPixv84rhs6oYw4EPPtJ4kNGHcuoOqNplt599NG7CDJSJMGpuAcjYHaHmb6X9I/Lq4M3VQRRhoGV1hEMq2XiaxTPTa2XljClGXLvQjqEEbNF0KOxXePeF4/QKBgQCvgDAQUFrjOmLNoTy33u/0wry9AZdqnokJOQsXoGQpnqhzjLiFFd/9Rqf3BhnjOEhxpnrUR13qnoPyYHbC/9fUMWzftHOzGSwOgQTD5kizTQ27iiivsQbgTlJuI6508l4CiHW4XNeRbqgvXEkskKbLWP2FPtwqYZvHB46co5JdwQKBgQDBU7wH51W3GSVtnsByoI5t2ETLymGTOcTc1XibIsv6NGqa/UWZbEBlcF6XTDt6vwTONQz1YiVxQb35o1orHRR92KXldB4clKhKs/JcRn/ui9O19q7staKKRDZsnvGzPcbQV2Ws1y0mlu7UWL+3TsvYVoJ3AxtSGAsXMSxTkiCSiQKBgB5K0gD+3bE68rLrkb9rC6ADvPAixi/xDVY6Ml/xn1hPumO3dmICVJczCurocq91l4uGYM0jRGKq2buMSvN9lZNatKAoVZAkWCZovpnRtdq9AhHM1xj8RWOSIUhBgGtPKkrlouwfmlXP89e45ih7D08qHRhSsU3fazP/ae4/jZQBAoGAdwrlXe3bTi9Zsq1lG8d8+E53v2HwA6hKsxQR73WSoccM6xqQc4olPX17gsfsE9Yop8ENxCDI+nFqIGPjPo9tDNuRNLulBKDtMQaX+40rekkND/n1pkleDVA3tREB9jfV3j14/usqYcpwZxpWrrTFESq9Z1z+YdtoR5k1H/yYEn8= 
+  public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnejS8R3Ahfpgp8PgaeOzp5baJuFqUVxWu2fOt2Bdqx+lgxO7yVEc+ALLiGhyM3vfCKH+oDYp5rignzlLZlhQODOm1MaARUcA9uJLZFhzgiYzhpi0/rVjnguAxnxJ39qdGqgd0Tagz8umn/mru9nsgC0NqiAEw/ZkRKNdgwXfDTiTLEhcUMKNlmsasQsFcGXM+J2gMAGkAFwpcSUnAJXTB2hxqkFiGxKVt2aipHeIFLhKCwtTdCRgb3xbsYvmyubq3eH1o6T3MD8N025ejh2assd+Jz+QmTwelg1Sgc17bjsJVu5aFu+e3xqDBshHznjG5r5LlptKaaHoECPTpzofvQIDAQAB
+  notify_url: http://47.92.27.215:8090/jaso/Orders/aliNotify
+  
+##################  wechat配置 ####################
+wechat:
+  app_id: wx89aaee5dfa45f172
+  app_secret: ef9491172fb81e5bd5bea126ddd46f12
+  key: 50C8C5E16C0323A6F0D5B17EBF8EA70E
+  server_url: https://api.mch.weixin.qq.com/pay/unifiedorder
+  notify_url: http://47.92.27.215:8090/jaso/Orders/wechatNotify
+  mchid: 1514846241

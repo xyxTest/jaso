@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaj.jaso.business.securitycheck.mapper.SecurityCheckMapper">
+<select id="selectLists" resultType="com.yaj.jaso.business.securitycheck.entity.vo.SecurityCheckGet">
+        select a.security_check_id as securityCheckId,a.company_id as companyId,a.project_id as projectId,
+		a.security_check_name as securityCheckName,a.finished_date as finishedDate,a.start_date as startDate,
+		a.type,a.status,a.state,a.create_time as createTime,a.inform_users as informUsers,a.process as process,
+		a.project_paper_id as projectPaperId,a.x,a.y,a.jaso_user_id as jasoUserId,a.nature_id as natureId,
+		a.if_delete as if_delete, b.user_real_name as userRealName,c.paper_url as projectPaperUrl,d.nature_name as natureName
+		 from security_check a left
+		join jaso_user b on a.jaso_user_id=b.jaso_user_id left join project_paper c on 
+		a.project_paper_id=c.project_paper_id 
+		left join nature d on a.nature_id=d.nature_id where a.if_delete=0 
+		<if test="companyId != null">
+           and a.company_id=#{companyId}
+        </if> 
+        <if test="jasoUserId != null">
+           and a.jaso_user_id=#{jasoUserId} 
+        </if> 
+        <if test="projectId != null">
+           and a.project_id=#{projectId}
+        </if> 
+        <if test="status != null">
+           and (a.status=2 or a.status=3)
+        </if> 
+        <if test="natureId != null">
+           and a.nature_id=#{natureId}
+        </if> 
+        <if test="startTime!= null and startTime!=''">
+           and DATE_FORMAT(a.finished_date, '%Y-%m-%d')>=  DATE_FORMAT(#{startTime}, '%Y-%m-%d')
+        </if>
+        <if test="endTime!= null and endTime!=''">
+           and DATE_FORMAT(a.finished_date, '%Y-%m-%d')&lt;=  DATE_FORMAT(#{endTime}, '%Y-%m-%d')
+        </if>
+        <if test="type!= null">
+           and a.type = #{type}
+        </if>
+         <if test="searchContent!= null">
+            and (a.security_check_name like #{searchContent} 
+		    or a.jaso_user_id in (select jaso_user_id from jaso_user where user_real_name like #{searchContent}) 
+		    or a.security_check_id in 
+		    (select a.about_id from quality_check_type a,project_check_type b 
+		    where a.type=1 and a.project_check_type_id=b.project_check_type_id 
+		    and b.check_name like #{searchContent}))
+        </if>
+         ORDER BY a.security_check_id DESC
+    </select>
+     <select id="selectDetail" resultType="com.yaj.jaso.business.securitycheck.entity.vo.SecurityCheckGet">
+        select a.security_check_id as securityCheckId,a.company_id as companyId,a.project_id as projectId,
+		a.security_check_name as securityCheckName,a.finished_date as finishedDate,a.start_date as startDate,
+		a.type,a.status,a.state,a.create_time as createTime,a.inform_users as informUsers,
+		a.project_paper_id as projectPaperId,a.x,a.y,a.jaso_user_id as jasoUserId,a.nature_id as natureId,
+		a.if_delete as if_delete, b.user_real_name as userRealName,c.paper_url as projectPaperUrl, 
+		d.nature_name as natureName from security_check a left join jaso_user b on a.jaso_user_id=b.jaso_user_id
+		left join project_paper c on a.project_paper_id=c.project_paper_id 
+		left join nature d on a.nature_id=d.nature_id where a.if_delete=0 
+		<if test="companyId != null">
+           and a.company_id=#{companyId}
+        </if> 
+        <if test="projectId != null">
+           and a.project_id=#{projectId}
+        </if> 
+        <if test="securityCheckId != null">
+           and a.security_check_id=#{securityCheckId}
+        </if> 
+    </select>
+    <select id="selectAboutUserList" resultType="com.yaj.jaso.business.qualitycheck.entity.vo.AboutUserInfo">
+        select a.quality_check_users_id as qualityCheckUsersId,a.type,a.user_type as userType,
+        a.jaso_user_id as jasoUserId,a.user_real_name as userRealName,a.about_id as aboutId,
+        a.company_id as companyId,a.project_id as projectId,a.create_time as createTime,
+        a.if_delete as ifDelete,b.user_icon as userIcon 
+		from quality_check_users a,jaso_user b where a.jaso_user_id=b.jaso_user_id and a.type=2 and a.if_delete=0 
+		<if test="companyId != null">
+           and a.company_id=#{companyId}
+        </if> 
+        <if test="projectId != null">
+           and a.project_id=#{projectId}
+        </if> 
+    </select>
+    <select id="selectAboutUserDetail" resultType="com.yaj.jaso.business.qualitycheck.entity.vo.AboutUserInfo">
+         select a.quality_check_users_id as qualityCheckUsersId,a.type,a.user_type as userType,
+        a.jaso_user_id as jasoUserId,a.user_real_name as userRealName,a.about_id as aboutId,
+        a.company_id as companyId,a.project_id as projectId,a.create_time as createTime,
+        a.if_delete as ifDelete,b.user_icon as userIcon 
+		from quality_check_users a,jaso_user b where a.if_delete=0 and a.jaso_user_id=b.jaso_user_id and a.type=2
+		<if test="companyId != null">
+           and a.company_id=#{companyId}
+        </if> 
+        <if test="projectId != null">
+           and a.project_id=#{projectId}
+        </if> 
+        <if test="securityCheckId != null">
+           and a.about_id=#{securityCheckId}
+        </if>
+    </select>
+    <select id="getListByAboutId" resultType="com.yaj.jaso.business.securitycheck.entity.vo.QualityCheckTypeDetail">
+        select a.quality_check_type_id as qualityCheckTypeId,a.name,a.company_id as companyId,a.project_id as projectId,
+        a.type,a.about_id as aboutId,a.project_check_type_id as projectCheckTypeId,a.state,a.describe,
+        a.voice_files as voiceFiles,a.image_files as imageFiles,a.if_delete as ifDelete,b.check_name as checkName 
+        from quality_check_type a left join project_check_type b on a.project_check_type_id = b.project_check_type_id
+         where a.if_delete is not null and a.if_delete=0 and a.type=2
+         <if test="securityCheckId != null">
+           and a.about_id=#{securityCheckId}
+        </if> 
+    </select>
+</mapper>

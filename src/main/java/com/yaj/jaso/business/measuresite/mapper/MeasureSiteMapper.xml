@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yaj.jaso.business.measuresite.mapper.MeasureSiteMapper">
+<!-- 获取某一节点的所有子节点 -->
+	<select id="selectListTreeByPid" resultType="com.yaj.jaso.business.measuresite.entity.po.MeasureSitePO">
+    	 SELECT t3.measure_site_id as measureSiteId,t3.major_type as majorType,
+		     t3.site_type as siteType,t3.measure_site_name as measureSiteName,t3.pid,
+		     t3.company_id as companyId,t3.project_id as projectId,t3.create_time as createTime,
+		     t3.measure_paper_id as measurePaperId,t3.jaso_user_id as jasoUserId,
+		     t3.checked_status as checkedStatus,t3.project_building_id as projectBuildingId,
+		     t3.if_delete as ifDelete FROM (
+             SELECT t1.*,
+             IF(FIND_IN_SET(pid, @pids) > 0, @pids := CONCAT(@pids, ',', project_building_id), 0) AS ischild
+             FROM (
+                  SELECT * FROM measure_site t ORDER BY pid, project_building_id
+                 ) t1    
+        <if test="pid != null">
+            ,(SELECT @pids := #{pid})t2
+        </if>
+         ) t3 LEFT JOIN measure_paper t4 on t3.measure_paper_id = t4.measure_paper_id WHERE ischild != 0 and t3.if_delete=0 and t3.site_type=3
+	</select>
+		<!-- 获取某一节点的所有子节点 -->
+	<select id="selectListTreeByPid" resultType="com.yaj.jaso.business.measuresite.entity.po.GetsResultMeasure">
+    	  SELECT t3.measure_site_id as measureSiteId,t3.company_id as companyId,t3.checked_status as checkedStatus,
+				 t3.project_building_id as projectBuildingId,t3.project_id as projectId,t3.measure_site_name as measureSiteName,
+         t3.pid,t3.site_type as siteType,t3.from_project_building as fromProjectBuilding,t3.jaso_user_id as jasoUserId,t5.user_real_name as userRealName,
+		     t3.create_time as createTime,t3.apartment_id as apartmentId,t3.if_delete as ifDelete,t4.apartment_name as apartmentName FROM (
+             SELECT t1.*,
+             IF(FIND_IN_SET(pid, @pids) > 0, @pids := CONCAT(@pids, ',', project_building_id), 0) AS ischild
+             FROM (
+                  SELECT * FROM measure_site t ORDER BY pid, project_building_id
+                 ) t1,    
+        <if test="pid != null">
+            (SELECT @pids := #{pid}
+        </if> )t2
+         ) t3 LEFT JOIN apartment t4 on t3.apartment_id = t4.apartment_id LEFT JOIN jaso_user t5 on t3.jaso_user_id = t5.jaso_user_id 
+          WHERE ischild != 0 and t3.if_delete=0 and t3.site_type=3
+        <if test="companyId !=null">
+             and t3.company_id=#{companyId}
+        </if>
+        <if test="projectId !=null">
+             and t3.project_id=#{projectId} ORDER BY t3.project_building_id asc
+        </if>
+         limit #{limit1},#{limit2}
+	</select>
+	<select id="selectListTreeByPidCount" resultType="java.lang.Integer">
+    	 SELECT count(t3.measure_site_id) as total FROM (
+             SELECT t1.*,
+             IF(FIND_IN_SET(pid, @pids) > 0, @pids := CONCAT(@pids, ',', project_building_id), 0) AS ischild
+             FROM (
+                  SELECT * FROM measure_site t ORDER BY pid, project_building_id
+                 ) t1,    
+        <if test="pid != null">
+            (SELECT @pids := #{pid}
+        </if> )t2
+         ) t3 LEFT JOIN apartment t4 on t3.apartment_id = t4.apartment_id LEFT JOIN jaso_user t5 on t3.jaso_user_id = t5.jaso_user_id 
+          WHERE ischild != 0 and t3.if_delete=0 and t3.site_type=3
+        <if test="companyId !=null">
+             and t3.company_id=#{companyId}
+        </if>
+        <if test="projectId !=null">
+             and t3.project_id=#{projectId} ORDER BY t3.project_building_id asc
+        </if>
+	</select>
+	<select id="countAllPoint" resultType="com.yaj.jaso.business.measuresite.entity.vo.SiteCountNum">
+	    select count( a.measure_site_point_id) as num,a.measure_site_id as measureSiteId from
+	    (select measure_point_id,measure_site_id,measure_site_point_id from measure_site_point where if_delete=0 
+	    <if test="projectId !=null">
+             and project_id=#{projectId}
+        </if>
+	     <if test="companyId !=null">
+             and company_id=#{companyId} 
+        </if> 
+         and measure_site_id in
+	    <foreach collection="roomIdList" index="index" item="i" open="("
+                 separator="," close=")">
+            #{i}
+        </foreach>	
+        GROUP BY measure_point_id,measure_site_id) a GROUP BY a.measure_site_id  
+	 </select>
+	 <select id="countDonePoint" resultType="com.yaj.jaso.business.measuresite.entity.vo.SiteCountNum">
+	    select count( a.point_data_input_log_id) as num,a.measure_site_id as measureSiteId from
+	    (select measure_point_id,measure_site_id,point_data_input_log_id from point_data_input_log where if_delete=0 
+	    <if test="projectId !=null">
+             and project_id=#{projectId}
+        </if>
+	     <if test="companyId !=null">
+             and company_id=#{companyId} 
+        </if> 
+         and measure_site_id in
+	    <foreach collection="roomIdList" index="index" item="i" open="("
+                 separator="," close=")">
+            #{i}
+        </foreach>	
+        GROUP BY measure_point_id,measure_site_id) a GROUP BY a.measure_site_id  
+	 </select>
+</mapper>
